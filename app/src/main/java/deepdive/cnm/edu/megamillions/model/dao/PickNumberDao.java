@@ -12,7 +12,7 @@ import java.util.List;
 public interface PickNumberDao {
 
   @Insert(onConflict = OnConflictStrategy.FAIL)
-  long insert(PickNumber... numbers);
+  List<Long> insert(List<PickNumber> numbers);
 
   @Query("SELECT * FROM PickNumber WHERE pick_id = :pickId ORDER BY pool, value")
   List<PickNumber> select(long pickId);
