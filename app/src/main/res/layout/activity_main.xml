@@ -5,7 +5,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".MainActivity">
+  tools:context=".controller.MainActivity">
 
   <android.support.design.widget.AppBarLayout
     android:layout_width="match_parent"
@@ -26,9 +26,10 @@
   <android.support.design.widget.FloatingActionButton
     android:id="@+id/add_pick"
     app:rippleColor="#00ff00"
+    app:backgroundTint="#008000"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/fab_margin"
     android:layout_gravity="bottom|end"
-    app:srcCompat="@drawable/ic_attach_money_24dp"/>
+    app:srcCompat="@drawable/ic_hot_tub_24dp"/>
 </android.support.design.widget.CoordinatorLayout>
