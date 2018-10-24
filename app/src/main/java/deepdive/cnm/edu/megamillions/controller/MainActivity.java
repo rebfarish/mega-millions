@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
   private Generator generator;
   private RecyclerView pickListView;
   private PickAdapter adapter;
-  private List<int[]> picks;
+  private List<PickAndNumbers> picks;
   private Random rng;
   private PickDatabase database;
 
@@ -89,20 +89,16 @@ public class MainActivity extends AppCompatActivity {
     super.onStop();
   }
 
+  public void deletePick(int position, Pick pick){
+    new DeleteTask(position).execute(pick);
+  }
+
   private class QueryTask extends AsyncTask<Void, Void, List<PickAndNumbers>> {
 
     @Override
     protected void onPostExecute(List<PickAndNumbers> pickAndNumbers) {
-      //FIXME Assume less with data model.
       picks.clear();
-      for (PickAndNumbers pick : pickAndNumbers) {
-        int[] numbers = new int[pick.getNumbers().size()];
-        int index = 0;
-        for (PickNumber number : pick.getNumbers()){
-          numbers[index ++] = number.getValue();
-        }
-        picks.add(numbers);
-      }
+      picks.addAll(pickAndNumbers);
       adapter.notifyDataSetChanged();
     }
 
@@ -111,16 +107,16 @@ public class MainActivity extends AppCompatActivity {
       return database.getPickDao().selectWithNumbers();
     }
   }
-  private class AddTask extends AsyncTask<int[], Void, int[]> {
+  private class AddTask extends AsyncTask<int[], Void, PickAndNumbers> {
 
     @Override
-    protected void onPostExecute(int[] numbers) {
-      picks.add(numbers);
+    protected void onPostExecute(PickAndNumbers pick) {
+      picks.add(pick);
       adapter.notifyItemInserted(picks.size() - 1);
     }
 
     @Override
-    protected int[] doInBackground(int[]... ints) {
+    protected PickAndNumbers doInBackground(int[]... ints) {
      int[] numbers = ints[0];
       Pick pick = new Pick();
       long pickId = database.getPickDao().insert(pick);
@@ -133,7 +129,34 @@ public class MainActivity extends AppCompatActivity {
         pickNumbers.add(pickNumber);
       }
       database.getPickNumberDao().insert(pickNumbers);
-      return numbers;
+      PickAndNumbers pickAndNumbers = new PickAndNumbers();
+      pickAndNumbers.setPick(pick);
+      pickAndNumbers.setNumbers(pickNumbers);
+      return pickAndNumbers;
+    }
+  }
+
+  private class DeleteTask extends AsyncTask<Pick, Void, Integer>{
+
+    private int position;
+
+    public DeleteTask(int posititon) {
+      this.position = posititon;
+    }
+
+    @Override
+    protected void onPostExecute(Integer integer) {
+      super.onPostExecute(integer);
+      // TODO Deal with input parameter
+      picks.remove(position);
+      adapter.notifyItemRemoved(position);
+      adapter.notifyItemChanged(position, picks.size() - position);
+    }
+
+    @Override
+    protected Integer doInBackground(Pick... picks) {
+      // TODO Deal with null or no picks.
+      return database.getPickDao().delete(picks[0]);
     }
   }
 }

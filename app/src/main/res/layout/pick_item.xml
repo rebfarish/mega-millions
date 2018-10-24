@@ -56,35 +56,40 @@
     android:id="@+id/num_0"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/PickNumber"
     app:layout_constraintEnd_toEndOf="@id/guideline_0"/>
 
   <TextView
     android:id="@+id/num_1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/PickNumber"
     app:layout_constraintEnd_toEndOf="@id/guideline_1"/>
 
   <TextView
     android:id="@+id/num_2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/PickNumber"
     app:layout_constraintEnd_toEndOf="@id/guideline_2"/>
 
   <TextView
     android:id="@+id/num_3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/PickNumber"
     app:layout_constraintEnd_toEndOf="@id/guideline_3"/>
 
   <TextView
     android:id="@+id/num_4"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    style="@style/PickNumber"
     app:layout_constraintEnd_toEndOf="@id/guideline_4"/>
 
   <TextView
     android:id="@+id/num_5"
-    android:textColor="#FF0000"
+    style="@style/SupplementaryPickNumber"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:layout_constraintEnd_toEndOf="@id/guideline_5"/>

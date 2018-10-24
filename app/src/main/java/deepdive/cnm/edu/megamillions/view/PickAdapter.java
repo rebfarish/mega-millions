@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -13,16 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import deepdive.cnm.edu.megamillions.R;
+import deepdive.cnm.edu.megamillions.controller.MainActivity;
+import deepdive.cnm.edu.megamillions.model.entity.PickNumber;
+import deepdive.cnm.edu.megamillions.model.pojo.PickAndNumbers;
 import java.util.Arrays;
 import java.util.List;
 
 public class PickAdapter extends RecyclerView.Adapter<PickAdapter.Holder> {
 
   private Context context;
-  private List<int[]> picks;
+  private List<PickAndNumbers> picks;
 
-  //TODO Modify to take List<PickWithNumbers>.
-  public PickAdapter(Context context, List<int[]> picks) {
+  public PickAdapter(Context context, List<PickAndNumbers> picks) {
     this.context = context;
     this.picks = picks;
 
@@ -35,13 +38,15 @@ public class PickAdapter extends RecyclerView.Adapter<PickAdapter.Holder> {
     return new Holder(view);
   }
 
+
   @Override
   public void onBindViewHolder(@NonNull Holder holder, int position) {
-    holder.bind(); //TODO Pass current PickWithNumbers instance.
-    if (position % 2 ==1){
-      holder.itemView.setBackgroundColor(Color.argb(32,0,0,0));
-    }
-    //TODO see if there's a better way to do alternate-row shading.
+    holder.bind(); // TODO Pass current PickWithNumbers instance.
+    // TODO Note that ternary (or if-else) is needed to deal with re-bound holders.
+    int background = (position % 2 == 0)
+        ? ContextCompat.getColor(context, R.color.pickBackground)
+        : ContextCompat.getColor(context, R.color.pickBackgroundAlternate);
+    holder.itemView.setBackgroundColor(background);
   }
 
   @Override
@@ -54,6 +59,7 @@ public class PickAdapter extends RecyclerView.Adapter<PickAdapter.Holder> {
 
     private static final int PICK_LENGTH = 6;
 
+    private PickAndNumbers pick;
     private TextView[] numbers;
 
     public Holder(@NonNull View view) {
@@ -67,23 +73,23 @@ public class PickAdapter extends RecyclerView.Adapter<PickAdapter.Holder> {
 
     }
 
-    private void bind(){
-      //TODO Use PickWithNumbers instance.
-      int[] numbers = picks.get(getAdapterPosition());
-      for (int i = 0; i < numbers.length; i++){
-        this.numbers[i].setText(Integer.toString(numbers[i]));
-        //TODO format string to have length of two digits with 0 padding i.e. 7 = 07
+    private void bind() {
+      // TODO Use PickWithNumbers instance.
+      pick = picks.get(getAdapterPosition());
+      List<PickNumber> numbers = pick.getNumbers();
+      int index = 0;
+      for (PickNumber pickNumber : numbers) {
+        this.numbers[index++]
+            .setText(context.getString(R.string.pick_number_format, pickNumber.getValue()));
       }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
       menu.add(R.string.delete_pick).setOnMenuItemClickListener((item) -> {
-        picks.remove(getAdapterPosition());
-        notifyItemRemoved(getAdapterPosition());
+        ((MainActivity) context).deletePick(getAdapterPosition(),pick.getPick());
         return true;
       });
     }
   }
-//TODO Create DeleteTask that takes a PickWithNumbers instance.
 }
