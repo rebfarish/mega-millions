@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import deepdive.cnm.edu.megamillions.R;
 import deepdive.cnm.edu.megamillions.model.db.PickDatabase;
 import deepdive.cnm.edu.megamillions.model.entity.Pick;
@@ -65,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
     boolean handled = true;
     switch (item.getItemId()){
       case R.id.action_clear:
-        picks.clear();
-        adapter.notifyDataSetChanged();
+        new DeleteTask(-1).execute();
         break;
         default:
           handled = super.onOptionsItemSelected(item);
@@ -140,23 +140,32 @@ public class MainActivity extends AppCompatActivity {
 
     private int position;
 
-    public DeleteTask(int posititon) {
-      this.position = posititon;
+    public DeleteTask(int position) {
+      this.position = position;
     }
 
     @Override
-    protected void onPostExecute(Integer integer) {
-      super.onPostExecute(integer);
-      // TODO Deal with input parameter
-      picks.remove(position);
-      adapter.notifyItemRemoved(position);
-      adapter.notifyItemChanged(position, picks.size() - position);
+    protected void onPostExecute(Integer rowsAffected) {
+      if (position < 0){
+        picks.clear();
+        adapter.notifyDataSetChanged();
+        Toast.makeText(MainActivity.this,
+            getString(R.string.clear_all_format, rowsAffected), Toast.LENGTH_LONG).show();
+
+      }else {
+        picks.remove(position);
+        adapter.notifyItemRemoved(position);
+        adapter.notifyItemRangeChanged(position, picks.size() - position);
+      }
     }
 
     @Override
     protected Integer doInBackground(Pick... picks) {
-      // TODO Deal with null or no picks.
-      return database.getPickDao().delete(picks[0]);
+      if (picks.length == 0){
+        return database.getPickDao().nuke();
+      }else {
+        return database.getPickDao().delete(picks[0]);
+      }
     }
   }
 }
